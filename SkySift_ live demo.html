@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkySift: live demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#f5f5f7;--ink:#1d1d1f;--mut:#6e6e73;--card:#fff;--line:#d2d2d7;--blue:#0a6cff;--coral:#e5483a;--gold:#b87500;--ok:#12805f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b12;--ink:#f5f5f7;--mut:#a1a1a6;--card:#17171f;--line:#2c2c34;--blue:#4da3ff;--coral:#ff7a6b;--gold:#ffc857;--ok:#5fe0b5}}
+:root[data-theme="dark"]{--bg:#0b0b12;--ink:#f5f5f7;--mut:#a1a1a6;--card:#17171f;--line:#2c2c34;--blue:#4da3ff;--coral:#ff7a6b;--gold:#ffc857;--ok:#5fe0b5}
+html{scroll-padding-top:calc(60px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;display:flex;justify-content:space-between;align-items:center;padding:0 22px;height:52px;background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);font-size:14px}
+.nav a{color:var(--mut);text-decoration:none;margin-left:22px}.nav a:hover{color:var(--ink)}.nav b{font-size:16px;letter-spacing:-.02em}
+.hero{position:relative;overflow:hidden;text-align:center;color:#f5f5f7;background:radial-gradient(120% 90% at 50% 0,#27235c,#0a0a18 70%);padding:96px 22px 88px}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}.hero>div{position:relative}
+h1{font-size:clamp(40px,8.5vw,92px);line-height:1.03;letter-spacing:-.045em;margin:0;font-weight:700}
+.hero p{max-width:600px;margin:18px auto 0;font-size:clamp(17px,2.2vw,21px);color:#b9bbd6}
+.ctr{margin:30px 0 26px;font-size:15px;color:#b9bbd6;font-variant-numeric:tabular-nums}.ctr b{display:block;font-size:clamp(34px,6vw,56px);letter-spacing:-.03em;color:#fff}
+.btn{font:inherit;font-weight:600;border:0;border-radius:99px;padding:13px 26px;background:#0a6cff;color:#fff;cursor:pointer;transition:transform .2s,background .2s}.btn:hover{background:#2b82ff;transform:scale(1.03)}.btn:active{transform:scale(.97)}
+.btn.s{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+main{max-width:1060px;margin:auto;padding:0 20px 70px}
+h2{font-size:clamp(28px,4.4vw,44px);letter-spacing:-.035em;line-height:1.08;margin:72px 0 10px}
+.mut{color:var(--mut)}.sm{font-size:14px}
+.stage{position:relative;border-radius:26px;overflow:hidden;background:#07070f;box-shadow:0 24px 60px -24px rgba(10,20,80,.55);margin-top:22px}
+.stage canvas{display:block;width:100%;height:clamp(260px,46vw,430px);position:absolute;inset:0}
+.stage .sp{height:clamp(260px,46vw,430px)}
+.hud{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.1);color:#f5f5f7;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.hud div{padding:14px 16px;background:rgba(10,10,24,.7)}.hud b{display:block;font-size:clamp(20px,3.4vw,30px);letter-spacing:-.02em;font-variant-numeric:tabular-nums}.hud span{font-size:12.5px;color:#a9acd0}
+.hud i{grid-column:1/-1;height:3px;background:rgba(255,255,255,.1)}.hud i u{display:block;height:100%;width:0;background:#4da3ff;transition:width .2s linear}
+.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0}
+.seg{display:inline-flex;background:color-mix(in srgb,var(--mut) 16%,transparent);border-radius:99px;padding:3px}
+.seg button{font:inherit;font-size:14px;border:0;background:transparent;color:var(--ink);padding:6px 14px;border-radius:99px;cursor:pointer;transition:background .25s,box-shadow .25s}
+.seg button[aria-pressed=true]{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.sw{display:inline-flex;gap:8px;align-items:center;font-size:14px;cursor:pointer;user-select:none}.sw input{appearance:none;width:42px;height:26px;border-radius:99px;background:color-mix(in srgb,var(--mut) 35%,transparent);position:relative;transition:background .25s;cursor:pointer}
+.sw input::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s}.sw input:checked{background:var(--ok)}.sw input:checked::after{transform:translateX(16px)}
+.score{margin-left:auto;font-size:14px;color:var(--mut)}.score b{color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}@media(max-width:780px){.two{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:22px;padding:20px 22px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 28px -12px rgba(0,0,0,.12)}
+.row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;background:var(--card);color:var(--ink);border:0;border-radius:16px;padding:13px 16px;margin:0 0 9px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.05),0 6px 18px -10px rgba(0,0,0,.14);transition:box-shadow .25s}
+.row[aria-pressed=true]{box-shadow:0 0 0 2px var(--blue)}.rk{font-weight:700;width:24px;color:var(--mut)}
+.bar{height:5px;border-radius:3px;background:var(--line);margin-top:6px}.bar i{display:block;height:100%;border-radius:3px;background:var(--blue);transition:width .5s}
+.tag{font-size:12.5px;color:var(--mut)}.tag.rare{color:var(--ok);font-weight:600}.tag.bad{color:var(--coral)}
+.act{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.chip{display:inline-block;margin:3px 5px 3px 0;padding:3px 11px;border-radius:99px;font-size:13px;background:color-mix(in srgb,var(--mut) 14%,transparent)}.chip.on{background:var(--ok);color:#fff}
+svg{width:100%;height:auto;display:block}button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}th{font-weight:600;color:var(--mut);font-size:13px}tr.me td{font-weight:700;background:color-mix(in srgb,var(--blue) 10%,transparent)}
+.w{overflow-x:auto}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+<nav class="nav"><b>SkySift</b><span><a href="#live">Live night</a><a href="#inspect">Inspect and teach</a><a href="#compare">Compare</a></span></nav>
+<header class="hero"><canvas id="hc" aria-hidden="true"></canvas><div>
+<h1>Find the needle<br>before it fades.</h1>
+<p>The Rubin Observatory is expected to send about ten million alerts every night. SkySift ranks the strange ones first, explains why, and learns from the scientist.</p>
+<div class="ctr"><b id="ctr">0</b>alerts in a single night</div>
+<button class="btn" id="go">Start the live demo</button></div></header>
+<main>
+<section id="live"><h2>One night, live.</h2>
+<p class="mut">Every dot is a simulated alert. Five rare events are hidden in the stream. Can SkySift surface them?</p>
+<div class="stage"><canvas id="bc"></canvas><canvas id="oc"></canvas><div class="sp"></div>
+<div class="hud"><div><b id="h1">0</b><span>Alerts received</span></div><div><b id="h2">0</b><span>Passed quality checks</span></div><div><b id="h3">0</b><span>Flagged unusual</span></div><div><b id="h4">0</b><span>On the shortlist</span></div><i><u id="pg"></u></i></div></div>
+<div class="tools"><button class="btn" id="st">Start the night</button>
+<div class="seg" role="group" aria-label="Speed"><button data-sp="1" aria-pressed="true">1x</button><button data-sp="3" aria-pressed="false">3x</button></div>
+<label class="sw"><input type="checkbox" id="rv"> Reveal hidden events</label>
+<span class="score" id="sc"></span></div>
+<h2 id="inspect">Inspect it. Teach it.</h2>
+<p class="mut">Pick a candidate, read why it was flagged, then tell SkySift whether it is interesting. Watch the ranking change.</p>
+<div class="seg" role="group" aria-label="Who is looking?" id="ps" style="margin:6px 0 16px"></div>
+<div class="two"><div id="list" aria-live="polite"><div class="card mut">Start the night to see the shortlist.</div></div><div class="card" id="det"><span class="mut">Select a candidate.</span></div></div></section>
+<section id="compare"><h2>What is different.</h2>
+<p class="mut">Other brokers already do parts of this. SkySift's pitch is the combination, in one workflow that explains itself and learns from the scientist.</p>
+<div class="card w"><table><tr><th>Broker</th><th>Anomaly detection</th><th>Active learning</th><th>Physics score</th><th>Why flagged</th><th>Per-user ranking</th></tr>
+<tr><td>ALeRCE</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟡</td></tr><tr><td>ANTARES</td><td>✅</td><td>—</td><td>—</td><td>—</td><td>🟡</td></tr><tr><td>Fink</td><td>✅</td><td>🟡</td><td>✅</td><td>—</td><td>🟡</td></tr><tr><td>Lasair</td><td>🟡</td><td>—</td><td>—</td><td>—</td><td>🟡</td></tr><tr><td>AMPEL</td><td>🟡</td><td>—</td><td>✅</td><td>—</td><td>🟡</td></tr><tr><td>Pitt-Google</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>Babamul / BOOM</td><td>—</td><td>—</td><td>🟡</td><td>—</td><td>🟡</td></tr>
+<tr class="me"><td>SkySift (this demo)</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr></table></div>
+<p class="mut sm">✅ deployed, 🟡 partly, — no evidence found (not proof it is absent). Broker rows come from the team's literature review: verify against the papers before presenting. The SkySift row is what this demo shows on simulated data, not a measured result on real Rubin alerts. Fading speeds and scores are demo values.</p></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const rng=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const N=12000,NAME={kn:"Kilonova-like",fl:"Unknown flare",gl:"Image artifact",sn:"Ordinary supernova",var:"Variable star",agn:"Active galaxy",ia:"Supernova",cc:"Supernova",ast:"Asteroid"};
+const PH={kn:.9,fl:.1,gl:.15},PS=[["a","Astronomer"],["m","Multi-messenger"],["s","Student"],["c","Citizen scientist"]];
+const TXT={kn:["It loses about 76% of its light every day, starts out blue, then turns red. A normal exploding star loses about 9%.","Fade 1.4 mag/day in g (supernova ~0.1); g-r 0.1, reddening +0.5 mag/day; 4 detections over 2.9 d."],
+fl:["It brightens, dims, then brightens again. None of the usual object types behave like this.","4 brightness reversals, amplitude 3.1 mag, colour swing 1.1 mag."],
+gl:["The image-quality check looks off and the colour jumps around, so this is probably a camera glitch.","Reliability 0.44; g-r scatter 1.2 mag; 2 detections."],
+x:["A smooth, slow change. It only looks odd because of how it was measured tonight.","Fade 0.09 mag/day; smooth; g-r 0.4."]};
+const NEXT={a:"Request a spectrum while it is still bright enough.",m:"Cross-check its position with gravitational-wave and neutrino alerts.",s:"Compare the curve with the dashed lines to see how it differs from a normal supernova.",c:"Vote on whether it looks like a real object. Votes become feedback for SkySift."};
+const CK=["Fades 1+ mag/day in blue","Blue colour","Reddens as it fades","Short-lived"],CKV={kn:[1,1,1,1],fl:[0,0,0,0],gl:[0,0,0,0],x:[0,0,0,0]};
+let S,W,persona="a",sel=null,speed=1,run=false,raf=0;
+function reset(){const R=rng(7),P=new Map(),ids=[];while(ids.length<5){const i=800+Math.floor(R()*10200);if(!P.has(i)){P.set(i,ids.length<3?"kn":"fl");ids.push(i)}}
+ S={R:rng(11),P,i:0,all:[],cand:[],pass:0,un:0};W={};sel=null;$("#list").innerHTML='<div class="card mut">Start the night to see the shortlist.</div>';det();fit()}
+function mk(i){const R=S.R,P=S.P;let k=P.get(i);if(!k){const r=R();k=r<.3?"var":r<.55?"agn":r<.63?"ia":r<.71?"cc":r<.88?"ast":"gl"}
+ const x=R(),y=R(),lo=k=="gl"&&R()<.7;let s;if(k=="gl")s=lo?.5+.4*R():.96+.04*R();else if(k=="kn"||k=="fl")s=.96+.04*R();else s=Math.pow(R(),.7)*.94+(R()<.004?.05:0);
+ return{i,k,x,y,s,pass:!lo,un:!lo&&s>.95,id:"SS07-"+String(i).padStart(5,"0"),h:k=="kn"?Math.round(12+R()*28):null}}
+const wk=c=>W[c.k]||1,pr=c=>((c.s+(PH[c.k]??.08))/2)*wk(c)*(persona=="m"&&c.k=="kn"?1.2:1)+(c.h?.12*Math.exp(-c.h/48):0);
+const topN=()=>[...S.cand].sort((a,b)=>pr(b)-pr(a)).slice(0,6);
+const rare=c=>c.k=="kn"||c.k=="fl";
+function score(){const t=topN(),f=t.filter(rare).length;$("#sc").innerHTML="Hidden events in the top 6: <b>"+f+" of 5</b>"}
+function list(anim){const t=topN(),el=$("#list"),old={};if(!t.length)return;if(anim)el.querySelectorAll(".row").forEach(r=>old[r.dataset.id]=r.getBoundingClientRect().top);
+ const mx=pr(t[0])||1,rv=$("#rv").checked;
+ el.innerHTML=t.map((c,i)=>'<button class="row" aria-pressed="'+(c.id==sel)+'" data-id="'+c.id+'"><span class="rk">'+(i+1)+'</span><span style="flex:1"><b>'+c.id+'</b> <span class="tag '+(rv?(rare(c)?"rare":"bad"):"")+'">'+(rv?NAME[c.k]:"")+'</span><div class="bar"><i style="width:'+Math.round(pr(c)/mx*100)+'%"></i></div></span><span class="tag">'+(c.h?"⏱ "+c.h+" h":"")+"</span></button>").join("");
+ if(anim&&!RM)el.querySelectorAll(".row").forEach(r=>{const d=old[r.dataset.id];if(d!=null){const dy=d-r.getBoundingClientRect().top;r.style.transition="none";r.style.transform="translateY("+dy+"px)";requestAnimationFrame(()=>requestAnimationFrame(()=>{r.style.transition="transform .55s cubic-bezier(.2,.8,.2,1)";r.style.transform=""}))}});
+ score()}
+const X=t=>34+t/14*370,Y=m=>14+(m-19.3)/5.4*170;
+function pts(k){const T=[0,.6,1.4,2.3,3.1],g=[],r=[];
+ if(k=="kn")T.forEach(t=>{g.push([t,21.2+1.6*t]);r.push([t,21.4+.9*t])});
+ else if(k=="fl")for(let t=0;t<=13;t+=1.3){const m=22.5-2.8*Math.exp(-.5*((t-3.5)/1.2)**2)-2*Math.exp(-.5*((t-8.5)/1.2)**2);r.push([t,m]);g.push([t,m+.2+1.1*Math.cos(t/1.5)])}
+ else if(k=="gl")[[1,21.4,22.9],[1.1,22.5,21.2],[6,20.9,22.6]].forEach(p=>{r.push([p[0],p[1]]);g.push([p[0],p[2]])});
+ else for(let t=0;t<=13;t+=1.6){r.push([t,21+.09*t]);g.push([t,21.3+.1*t])}
+ return[g.filter(p=>p[1]<24),r.filter(p=>p[1]<24)]}
+function svg(k){const[g,r]=pts(k);let s='<svg viewBox="0 0 420 214" role="img" aria-label="Light curve"><line x1="34" x2="410" y1="'+Y(24)+'" y2="'+Y(24)+'" stroke="var(--line)" stroke-dasharray="3 4"/><text x="38" y="'+(Y(24)-4)+'" font-size="10" fill="var(--mut)">telescope limit</text>';
+ const b=g.concat(r).sort((a,c)=>a[1]-c[1])[0];
+ if(b)[[.1,"var(--mut)"],[1.5,"var(--gold)"]].forEach(([sl,col])=>{s+='<line x1="'+X(b[0])+'" y1="'+Y(b[1])+'" x2="'+X(b[0]+6)+'" y2="'+Y(Math.min(b[1]+sl*6,24.5))+'" stroke="'+col+'" stroke-dasharray="5 4"/>'});
+ [[g,"var(--blue)"],[r,"var(--coral)"]].forEach(([a,col])=>{s+='<polyline fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" points="'+a.map(p=>X(p[0])+","+Y(p[1])).join(" ")+'"/>'+a.map(p=>'<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="4" fill="'+col+'"/>').join("")});
+ return s+'<text x="38" y="207" font-size="10" fill="var(--mut)">blue and red lines are two colours of light. Dashed: supernova speed (grey), kilonova speed (gold). Up is brighter.</text></svg>'}
+function det(){const el=$("#det"),c=S.cand.find(x=>x.id==sel);if(!c){el.innerHTML='<span class="mut">Select a candidate.</span>';return}
+ const k=TXT[c.k]?c.k:"x",tech=persona=="a"||persona=="m";
+ el.innerHTML='<b style="font-size:20px;letter-spacing:-.02em">Why SkySift flagged '+c.id+'</b><div class="mut sm" style="margin-top:2px">'+(c.h?"Fades below the telescope limit in about "+c.h+" hours":"No rush")+'</div>'+svg(c.k)+'<p style="margin:8px 0">'+TXT[k][tech?1:0]+'</p><div>'+CK.map((n,i)=>'<span class="chip'+(CKV[k][i]?" on":"")+'">'+(CKV[k][i]?"✓ ":"✗ ")+n+"</span>").join("")+'</div><p class="sm" style="margin:12px 0 0"><b>Next step:</b> '+NEXT[persona]+'</p><div class="act"><button class="btn" data-v="1">Interesting</button><button class="btn s" data-v="0">Boring</button></div><p class="mut sm" id="msg" aria-live="polite" style="margin:10px 0 0"></p>'}
+function hud(){$("#h1").textContent=S.i.toLocaleString();$("#h2").textContent=S.pass.toLocaleString();$("#h3").textContent=S.un.toLocaleString();$("#h4").textContent=S.cand.length?6:0;$("#pg").style.width=S.i/N*100+"%"}
+const bc=$("#bc"),oc=$("#oc"),bx=bc.getContext("2d"),ox=oc.getContext("2d");let cw=0,ch=0,dp=1;
+function fit(){dp=devicePixelRatio||1;cw=bc.clientWidth;ch=bc.clientHeight;[bc,oc].forEach(c=>{c.width=cw*dp;c.height=ch*dp});bx.setTransform(dp,0,0,dp,0,0);ox.setTransform(dp,0,0,dp,0,0);S.all.forEach(dot)}
+function dot(a){bx.fillStyle=!a.pass?"rgba(255,255,255,.07)":a.un?"#4da3ff":"rgba(170,180,255,.4)";const z=a.un?3:1.6;bx.fillRect(a.x*cw,a.y*ch,z,z)}
+function over(){ox.clearRect(0,0,cw,ch);const t=topN();t.forEach((c,i)=>{const x=c.x*cw,y=c.y*ch,p=run?0:(performance.now()/500)%1;ox.strokeStyle="#ffc857";ox.lineWidth=2;ox.beginPath();ox.arc(x,y,9+p*3,0,7);ox.stroke();ox.fillStyle="#ffc857";ox.font="600 11px system-ui";ox.fillText(i+1,x+13,y+4)})}
+function frame(){if(!run)return;const n=Math.ceil(N/(13*60)*speed);for(let j=0;j<n&&S.i<N;j++){const a=mk(S.i++);S.all.push(a);dot(a);if(a.pass)S.pass++;if(a.un){S.un++;S.cand.push(a)}}
+ hud();if(S.i%6<n){list(false)}over();
+ if(S.i>=N){run=false;$("#st").textContent="Replay";list(false);const f=topN().filter(rare).length;$("#sc").innerHTML="Done: "+N.toLocaleString()+" alerts, 6 candidates. Hidden events found: <b>"+f+" of 5</b>";(function p(){over();if(!run)requestAnimationFrame(p)})();return}
+ raf=requestAnimationFrame(frame)}
+function start(){cancelAnimationFrame(raf);reset();run=true;$("#st").textContent="Streaming...";raf=requestAnimationFrame(frame)}
+$("#st").onclick=start;
+$("#go").onclick=()=>{$("#live").scrollIntoView();setTimeout(start,RM?0:500)};
+document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{speed=+b.dataset.sp;document.querySelectorAll("[data-sp]").forEach(x=>x.setAttribute("aria-pressed",x==b))});
+$("#rv").onchange=()=>S.cand.length&&list(false);
+$("#ps").innerHTML=PS.map(([k,n])=>'<button data-p="'+k+'" aria-pressed="'+(k==persona)+'">'+n+"</button>").join("");
+$("#ps").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;persona=b.dataset.p;$("#ps").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x==b));if(S.cand.length){list(true);det()}};
+document.addEventListener("click",e=>{const r=e.target.closest(".row"),b=e.target.closest("[data-v]");
+ if(r){sel=r.dataset.id;list(false);det();return}
+ if(b){const c=S.cand.find(x=>x.id==sel);W[c.k]=(W[c.k]||1)*(b.dataset.v=="1"?1.6:.5);list(true);$("#msg").textContent="Thanks. SkySift now ranks every "+NAME[c.k].toLowerCase()+" "+(b.dataset.v=="1"?"higher":"lower")+".";}});
+addEventListener("resize",()=>{fit();over()});
+reset();
+const hc=$("#hc"),hx=hc.getContext("2d");let HW,HH,HP=[];
+function hr(){HW=hc.width=hc.offsetWidth;HH=hc.height=hc.offsetHeight;HP=Array.from({length:150},()=>({x:Math.random()*HW,y:Math.random()*HH,v:.3+Math.random()*1.3,r:Math.random()*1.5+.4}))}
+hr();addEventListener("resize",hr);
+function hf(){hx.clearRect(0,0,HW,HH);HP.forEach((p,i)=>{p.y+=p.v;if(p.y>HH){p.y=0;p.x=Math.random()*HW}hx.fillStyle=i==7?"#ffc857":"rgba(170,180,255,.65)";hx.beginPath();hx.arc(p.x,p.y,i==7?3.4:p.r,0,7);hx.fill()});requestAnimationFrame(hf)}
+if(RM)$("#ctr").textContent="10,000,000";else{hf();const t0=performance.now();(function c(n){const q=Math.min(1,(n-t0)/6000);$("#ctr").textContent=Math.round(1e7*(1-Math.pow(1-q,3))).toLocaleString();if(q<1)requestAnimationFrame(c)})(t0)}
+</script></body></html>
